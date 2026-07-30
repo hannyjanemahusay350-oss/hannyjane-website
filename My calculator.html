@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>JS Calculator</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2171 0%, #e21313 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+        .calculator-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 320px;
+        }
+        .info-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 380px;
+            max-height: 520px;
+            overflow-y: auto;
+        }
+        .info-card h2 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        .info-card h3 {
+            color: #667eea;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .info-card p, .info-card li {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        .info-card ul { padding-left: 18px; }
+        .info-card code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+        .display {
+            background: #1e1e2f;
+            color: #00e5ff;
+            font-size: 2rem;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: right;
+            margin-bottom: 15px;
+            min-height: 60px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 1px;
+        }
+        .display .previous {
+            font-size: 0.9rem;
+            color: #888;
+            min-height: 20px;
+        }
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        button {
+            padding: 18px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+        button:hover { transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        .btn-num { background: #f0f0f5; color: #333; }
+        .btn-num:hover { background: #e0e0ea; }
+        .btn-op { background: #30364e; color: white; }
+        .btn-op:hover { background: #5a6186; }
+        .btn-eq { background: #764ba2; color: white; grid-column: span 2; }
+        .btn-eq:hover { background: #653a91; }
+        .btn-clear { background: #a24c4c; color: white; }
+        .btn-clear:hover { background: #ee5555; }
+        .btn-del { background: #ffa94d; color: white; }
+        .btn-del:hover { background: #abe88d; }
+        .btn-spec { background: #20c997; color: white; }
+        .btn-spec:hover { background: #10b987; }
+        .log-box {
+            margin-top: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #555;
+        }
+        .log-box p { margin: 2px 0; }
+        .log-title {
+            font-weight: bold;
+            color: #764ba2;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="calculator-card">
+        <div class="display">
+            <div class="previous" id="previous"></div>
+            <div id="current">0</div>
+        </div>
+        <div class="btn-grid">
+            <button class="btn-clear" onclick="clearAll()">AC</button>
+            <button class="btn-del" onclick="deleteLast()">DEL</button>
+            <button class="btn-spec" onclick="applyOperator('%')">%</button>
+            <button class="btn-op" onclick="applyOperator('/')">÷</button>
+
+            <button class="btn-num" onclick="appendNumber('7')">7</button>
+            <button class="btn-num" onclick="appendNumber('8')">8</button>
+            <button class="btn-num" onclick="appendNumber('9')">9</button>
+            <button class="btn-op" onclick="applyOperator('*')">×</button>
+
+            <button class="btn-num" onclick="appendNumber('4')">4</button>
+            <button class="btn-num" onclick="appendNumber('5')">5</button>
+            <button class="btn-num" onclick="appendNumber('6')">6</button>
+            <button class="btn-op" onclick="applyOperator('-')">−</button>
+
+            <button class="btn-num" onclick="appendNumber('1')">1</button>
+            <button class="btn-num" onclick="appendNumber('2')">2</button>
+            <button class="btn-num" onclick="appendNumber('3')">3</button>
+            <button class="btn-op" onclick="applyOperator('+')">+</button>
+
+            <button class="btn-num" onclick="appendNumber('0')">0</button>
+            <button class="btn-num" onclick="appendNumber('.')">.</button>
+            <button class="btn-eq" onclick="calculate()">=</button>
+        </div>
+        <div class="log-box">
+            <div class="log-title">Event Log</div>
+            <div id="eventLog"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentValue = '0';
+    let previousValue = '';
+    let operator = null;
+    let shouldResetScreen = false;
+
+    const currentDisplay = document.getElementById('current');
+    const previousDisplay = document.getElementById('previous');
+    const eventLog = document.getElementById('eventLog');
+
+    function logEvent(msg) {
+        const p = document.createElement('p');
+        p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+        eventLog.prepend(p);
+        while (eventLog.children.length > 5) {
+            eventLog.removeChild(eventLog.lastChild);
+        }
+    }
+
+    function updateDisplay() {
+        currentDisplay.textContent = currentValue;
+        if (operator !== null) {
+            previousDisplay.textContent = `${previousValue} ${operator}`;
+        } else {
+            previousDisplay.textContent = previousValue;
+        }
+    }
+
+    function appendNumber(num) {
+        logEvent(`Event Handler: appendNumber('${num}')`);
+        if (shouldResetScreen) {
+            currentValue = num === '.' ? '0.' : num;
+            shouldResetScreen = false;
+        } else {
+            if (num === '.' && currentValue.includes('.')) return;
+            if (currentValue === '0' && num !== '.') {
+                currentValue = num;
+            } else {
+                currentValue += num;
+            }
+        }
+        updateDisplay();
+    }
+
+    function applyOperator(op) {
+        logEvent(`Event Handler: applyOperator('${op}')`);
+        if (operator !== null && !shouldResetScreen) {
+            calculate();
+        }
+        operator = op;
+        previousValue = currentValue;
+        shouldResetScreen = true;
+        updateDisplay();
+    }
+
+    function calculate() {
+        logEvent('Event Handler: calculate()');
+        if (operator === null || shouldResetScreen) return;
+
+        const prev = parseFloat(previousValue);
+        const current = parseFloat(currentValue);
+        let result;
+
+        switch (operator) {
+            case '+':
+                result = prev + current;
+                break;
+            case '-':
+                result = prev - current;
+                break;
+            case '*':
+                result = prev * current;
+                break;
+            case '/':
+                if (current === 0) {
+                    result = 'Error: ÷0';
+                    logEvent('Problem Solved: Division by zero prevented!');
+                } else {
+                    result = prev / current;
+                }
+                break;
+            case '%':
+                result = prev % current;
+                break;
+            default:
+                return;
+        }
+
+        if (typeof result === 'number') {
+            result = Math.round(result * 100000000) / 100000000;
+        }
+
+        currentValue = String(result);
+        operator = null;
+        previousValue = '';
+        shouldResetScreen = true;
+        updateDisplay();
+    }
+
+    function clearAll() {
+        logEvent('Event Handler: clearAll()');
+        currentValue = '0';
+        previousValue = '';
+        operator = null;
+        shouldResetScreen = false;
+        updateDisplay();
+    }
+
+    function deleteLast() {
+        logEvent('Event Handler: deleteLast()');
+        if (currentValue.length === 1 || (currentValue.length === 2 && currentValue[0] === '-')) {
+            currentValue = '0';
+        } else {
+            currentValue = currentValue.slice(0, -1);
+        }
+        updateDisplay();
+    }
+
+    document.addEventListener('keydown', function(e) {
+        logEvent(`Event Listener: keydown '${e.key}'`);
+
+        if (e.key >= '0' && e.key <= '9') {
+            appendNumber(e.key);
+        } else if (e.key === '.') {
+            appendNumber('.');
+        } else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') {
+            applyOperator(e.key);
+        } else if (e.key === '%') {
+            applyOperator('%');
+        } else if (e.key === 'Enter' || e.key === '=') {
+            e.preventDefault();
+            calculate();
+        } else if (e.key === 'Backspace') {
+            deleteLast();
+        } else if (e.key === 'Escape') {
+            clearAll();
+        }
+    });
+
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('mouseenter', () => {
+            btn.style.transform = 'scale(1.05)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.transform = 'scale(1)';
+        });
+    });
+
+    logEvent('Calculator loaded. Ready!');
+</script>
+
+</body>
+</html>

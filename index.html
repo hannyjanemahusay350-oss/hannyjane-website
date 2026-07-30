@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Personal Profile</title>
+    <style>
+        /* ✅ GRADIENT BACKGROUND — PURPLE THEME */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 50%, #8b5cf6 100%);
+            margin: 20px auto;
+            padding: 20px;
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.2);
+        }
+
+        h1 {
+            color: #5b21b6;
+            text-align: center;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 12px;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: #4c1d95;
+            font-style: italic;
+            border-left: 4px solid #7c3aed;
+            padding-left: 12px;
+            margin-top: 35px;
+            opacity: 0.9;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            background-color: rgba(167, 139, 250, 0.25);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+        h2:hover {
+            color: #3b0764;
+            background-color: rgba(139, 92, 246, 0.4);
+        }
+        .toggle-icon::after {
+            content: "▼";
+            font-size: 14px;
+            transition: transform 0.3s ease;
+            color: #7c3aed;
+        }
+        .collapsed .toggle-icon::after {
+            transform: rotate(-90deg);
+        }
+
+        .instruction {
+            text-align: center;
+            font-weight: bold;
+            color: #4c1d95;
+            background-color: #ede9fe;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #8b5cf6;
+        }
+
+        .profile-photo {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid #7c3aed;
+            display: block;
+            margin: 15px auto 25px;
+            opacity: 0.92;
+            transition: opacity 0.3s ease;
+        }
+        .profile-photo:hover { opacity: 1; }
+
+        .reflection-photo {
+            width: 100%;
+            max-width: 550px;
+            border-radius: 10px;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 3px 10px rgba(107, 70, 193, 0.2);
+            opacity: 0.92;
+            transition: opacity 0.3s ease;
+        }
+        .reflection-photo:hover { opacity: 1; }
+
+        /* ✅ REFLECTION — TANAN ITALIC + PINK */
+        .reflection-text {
+            font-style: italic;
+            color: #db2777;
+            margin-top: 15px;
+            text-align: justify;
+            font-size: 1rem;
+        }
+
+        a {
+            color: #7c3aed;
+            text-decoration: none;
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
+        }
+        a:hover { text-decoration: underline; opacity: 1; }
+
+        hr {
+            border: none;
+            border-top: 1px solid #a78bfa;
+            margin: 35px 0;
+        }
+
+        ul, ol { padding-left: 25px; color: #2d1b69; }
+        p { color: #2d1b69; }
+        strong { color: #5b21b6; }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 10px;
+        }
+        .flex-item {
+            flex: 1 1 280px;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .content-wrapper {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .content-wrapper.show {
+            max-height: 900px;
+        }
+
+        /* ✅ FIXED CSS PARA SA FAMILY ALBUMS SLIDER */
+        .album-wrapper {
+            position: relative;
+            border: 2px solid #a78bfa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 10px;
+            background: white;
+            overflow: hidden;
+        }
+        .album-container {
+            display: flex;
+            gap: 15px;
+            transition: transform 0.4s ease;
+            width: max-content; /* ✅ Importante — kasya tanang litrato */
+        }
+        .album-photo {
+            width: 280px; /* ✅ Fixed size */
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #c4b5fd;
+            flex-shrink: 0; /* ✅ Importante — dili mokunhod */
+        }
+        .album-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            transition: background 0.2s ease;
+        }
+        .album-btn:hover {
+            background: #7c3aed;
+        }
+        .btn-left {
+            left: 20px;
+        }
+        .btn-right {
+            right: 20px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 380px;
+            border-radius: 8px;
+            border: 2px solid #a78bfa;
+            opacity: 0.95;
+            box-shadow: 0 4px 12px rgba(107, 70, 193, 0.15);
+        }
+
+        .file-name {
+            font-weight: bold;
+            color: #5b21b6;
+            margin: 8px 0 12px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .download-link {
+            text-align: center;
+            display: block;
+            margin-top: 5px;
+            color: #7c3aed;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 20px; max-width: 100%; }
+            .profile-photo { width: 140px; height: 140px; }
+            .album-photo { width: 200px; height: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My Personal Profile</h1>
+
+        <img src="hanny.jpeg" alt="Profile Photo" class="profile-photo">
+
+        <h2>About Me</h2>
+        <p>Hello! My name is Hanny Jane Mahusay. I am a student who loves technology and learning new things every day.</p>
+
+        <h2>My Hobbies</h2>
+        <ul>
+            <li>Reading Bible translations</li>
+            <li>Watching Movies</li>
+            <li>Listening to worship songs</li>
+            <li>Exploring nature and quiet places</li>
+        </ul>
+
+        <h2>My Favorite Website</h2>
+        <p><a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">Visit YouTube</a></p>
+
+        <h2>Fun Facts About Me</h2>
+        <p><strong>Favorite Color:</strong> Red & Violet</p>
+        <p><strong>Favorite Food:</strong> Adobo</p>
+        <p><strong>Dream Job:</strong> Software Developer / IT Professional</p>
+
+        <hr>
+
+        <h1>Simplicity in My Life</h1>
+
+        <h2>My Reflection Photo</h2>
+        <img src="myphoto.jpg" alt="Reflection Photo" class="reflection-photo">
+
+        <h2>Things Visible in the Photo</h2>
+        <ul>
+            <li>Fresh clean air</li>
+            <li>Rocky and stony ground</li>
+            <li>Clear bright blue sky</li>
+            <li>Simple and peaceful nature</li>
+        </ul>
+
+        <h2>Events Before, During, and After</h2>
+        <ol>
+            <li>I finished my school tasks and decided to go out to relax.</li>
+            <li>I arrived at this beach spot and found a nice, shaded place to sit.</li>
+            <li>I took this photo to keep the memory of this peaceful day.</li>
+            <li>I spent time enjoying the fresh air and quiet surroundings.</li>
+            <li>I saved this photo to tell the story of what simplicity means to me.</li>
+        </ol>
+
+        <h2>Personal Details</h2>
+        <p><strong>Full Name:</strong> Hanny Jane Mahusay</p>
+        <p><strong>Member ID:</strong> 111111111</p>
+        <p><strong>Mobile Number:</strong> 09550539962</p>
+        <p><strong>Email:</strong> hannyjanemahusay350@gmail.com</p>
+
+        <div class="instruction">📌 Click the section below to view your files</div>
+
+        <!-- ✅ MY VIDEO & POWERPOINT -->
+        <h2 id="mediaToggle1" class="collapsed">
+            My Video & PowerPoint
+            <span class="toggle-icon"></span>
+        </h2>
+        <div id="mediaContent1" class="content-wrapper">
+            <div class="flex-row">
+                <div class="flex-item">
+                    <p class="file-name">My Video</p>
+                    <video controls>
+                        <source src="My Video.mp4" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
+                    <a href="My Video.mp4" download class="download-link">📥 Download Video</a>
+                </div>
+                <div class="flex-item">
+                    <p class="file-name">css flexbox layout_Mahusay Hanny jane_MARIGOLD2026.pdf</p>
+                    <embed src="css flexbox layout_Mahusay Hanny jane_MARIGOLD2026.pdf" type="application/vnd.openxmlformats-officedocument.presentationml.presentation">
+                    <a href="css flexbox layout_Mahusay Hanny jane_MARIGOLD2026.pdf" download class="download-link">📥 Download PPT File</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ MY CALCULATOR & EXPLANATION VIDEO -->
+        <h2 id="mediaToggle2" class="collapsed">
+            My Calculator & Explanation Video
+            <span class="toggle-icon"></span>
+        </h2>
+        <div id="mediaContent2" class="content-wrapper">
+            <div class="flex-row">
+                <div class="flex-item" style="width: 100%; max-width: 400px; margin: 0 auto;">
+                    <p class="file-name">My Calculator</p>
+                    <iframe srcdoc='
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>JS Calculator</title>
+                        <style>
+                            * { box-sizing: border-box; margin: 0; padding: 0; }
+                            body {
+                                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                                background: linear-gradient(135deg, #0f2171 0%, #e21313 100%);
+                                min-height: 100vh;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                padding: 15px;
+                            }
+                            .calculator-card {
+                                background: #ffffff;
+                                border-radius: 20px;
+                                padding: 20px;
+                                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                                width: 100%;
+                                max-width: 320px;
+                            }
+                            .display {
+                                background: #1e1e2f;
+                                color: #00e5ff;
+                                font-size: 2rem;
+                                padding: 15px 20px;
+                                border-radius: 12px;
+                                text-align: right;
+                                margin-bottom: 15px;
+                                min-height: 60px;
+                                word-wrap: break-word;
+                                overflow-wrap: break-word;
+                                font-family: "Courier New", monospace;
+                                letter-spacing: 1px;
+                            }
+                            .display .previous {
+                                font-size: 0.9rem;
+                                color: #888;
+                                min-height: 20px;
+                            }
+                            .btn-grid {
+                                display: grid;
+                                grid-template-columns: repeat(4, 1fr);
+                                gap: 10px;
+                            }
+                            button {
+                                padding: 15px;
+                                font-size: 1.1rem;
+                                border: none;
+                                border-radius: 12px;
+                                cursor: pointer;
+                                transition: all 0.2s ease;
+                                font-weight: 600;
+                            }
+                            button:hover { transform: translateY(-2px); }
+                            button:active { transform: translateY(0); }
+                            .btn-num { background: #f0f0f5; color: #333; }
+                            .btn-num:hover { background: #e0e0ea; }
+                            .btn-op { background: #30364e; color: white; }
+                            .btn-op:hover { background: #5a6186; }
+                            .btn-eq { background: #764ba2; color: white; grid-column: span 2; }
+                            .btn-eq:hover { background: #653a91; }
+                            .btn-clear { background: #a24c4c; color: white; }
+                            .btn-clear:hover { background: #ee5555; }
+                            .btn-del { background: #ffa94d; color: white; }
+                            .btn-del:hover { background: #abe88d; }
+                            .btn-spec { background: #20c997; color: white; }
+                            .btn-spec:hover { background: #10b987; }
+                            .log-box {
+                                margin-top: 15px;
+                                background: #f8f9fa;
+                                border-radius: 10px;
+                                padding: 10px;
+                                max-height: 100px;
+                                overflow-y: auto;
+                                font-family: "Courier New", monospace;
+                                font-size: 0.8rem;
+                                color: #555;
+                            }
+                            .log-box p { margin: 2px 0; }
+                            .log-title {
+                                font-weight: bold;
+                                color: #764ba2;
+                                margin-bottom: 5px;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="calculator-card">
+                            <div class="display">
+                                <div class="previous" id="previous"></div>
+                                <div id="current">0</div>
+                            </div>
+                            <div class="btn-grid">
+                                <button class="btn-clear" onclick="clearAll()">AC</button>
+                                <button class="btn-del" onclick="deleteLast()">DEL</button>
+                                <button class="btn-spec" onclick="applyOperator(`%`)">%</button>
+                                <button class="btn-op" onclick="applyOperator(`/`)">÷</button>
+
+                                <button class="btn-num" onclick="appendNumber(`7`)">7</button>
+                                <button class="btn-num" onclick="appendNumber(`8`)">8</button>
+                                <button class="btn-num" onclick="appendNumber(`9`)">9</button>
+                                <button class="btn-op" onclick="applyOperator(`*`)">×</button>
+
+                                <button class="btn-num" onclick="appendNumber(`4`)">4</button>
+                                <button class="btn-num" onclick="appendNumber(`5`)">5</button>
+                                <button class="btn-num" onclick="appendNumber(`6`)">6</button>
+                                <button class="btn-op" onclick="applyOperator(`-`)">−</button>
+
+                                <button class="btn-num" onclick="appendNumber(`1`)">1</button>
+                                <button class="btn-num" onclick="appendNumber(`2`)">2</button>
+                                <button class="btn-num" onclick="appendNumber(`3`)">3</button>
+                                <button class="btn-op" onclick="applyOperator(`+`)">+</button>
+
+                                <button class="btn-num" onclick="appendNumber(`0`)">0</button>
+                                <button class="btn-num" onclick="appendNumber(`.`)">.</button>
+                                <button class="btn-eq" onclick="calculate()">=</button>
+                            </div>
+                            <div class="log-box">
+                                <div class="log-title">Event Log</div>
+                                <div id="eventLog"></div>
+                            </div>
+                        </div>
+                        <script>
+                            let currentValue = `0`;
+                            let previousValue = ``;
+                            let operator = null;
+                            let shouldResetScreen = false;
+
+                            const currentDisplay = document.getElementById(`current`);
+                            const previousDisplay = document.getElementById(`previous`);
+                            const eventLog = document.getElementById(`eventLog`);
+
+                            function logEvent(msg) {
+                                const p = document.createElement(`p`);
+                                p.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+                                eventLog.prepend(p);
+                                while (eventLog.children.length > 5) {
+                                    eventLog.removeChild(eventLog.lastChild);
+                                }
+                            }
+
+                            function updateDisplay() {
+                                currentDisplay.textContent = currentValue;
+                                if (operator !== null) {
+                                    previousDisplay.textContent = `${previousValue} ${operator}`;
+                                } else {
+                                    previousDisplay.textContent = previousValue;
+                                }
+                            }
+
+                            function appendNumber(num) {
+                                logEvent(`Event Handler: appendNumber("${num}")`);
+                                if (shouldResetScreen) {
+                                    currentValue = num === `.` ? `0.` : num;
+                                    shouldResetScreen = false;
+                                } else {
+                                    if (num === `.` && currentValue.includes(`.`)) return;
+                                    if (currentValue === `0` && num !== `.`) {
+                                        currentValue = num;
+                                    } else {
+                                        currentValue += num;
+                                    }
+                                }
+                                updateDisplay();
+                            }
+
+                            function applyOperator(op) {
+                                logEvent(`Event Handler: applyOperator("${op}")`);
+                                if (operator !== null && !shouldResetScreen) {
+                                    calculate();
+                                }
+                                operator = op;
+                                previousValue = currentValue;
+                                shouldResetScreen = true;
+                                updateDisplay();
+                            }
+
+                            function calculate() {
+                                logEvent(`Event Handler: calculate()`);
+                                if (operator === null || shouldResetScreen) return;
+
+                                const prev = parseFloat(previousValue);
+                                const current = parseFloat(currentValue);
+                                let result;
+
+                                switch (operator) {
+                                    case `+`: result = prev + current; break;
+                                    case `-`: result = prev - current; break;
+                                    case `*`: result = prev * current; break;
+                                    case `/`: result = current === 0 ? `Error: ÷0` : prev / current; break;
+                                    case `%`: result = prev % current; break;
+                                    default: return;
+                                }
+
+                                if (typeof result === `number`) {
+                                    result = Math.round(result * 100000000) / 100000000;
+                                }
+
+                                currentValue = String(result);
+                                operator = null;
+                                previousValue = ``;
+                                shouldResetScreen = true;
+                                updateDisplay();
+                            }
+
+                            function clearAll() {
+                                logEvent(`Event Handler: clearAll()`);
+                                currentValue = `0`;
+                                previousValue = ``;
+                                operator = null;
+                                shouldResetScreen = false;
+                                updateDisplay();
+                            }
+
+                            function deleteLast() {
+                                logEvent(`Event Handler: deleteLast()`);
+                                if (currentValue.length === 1 || (currentValue.length === 2 && currentValue[0] === `-`)) {
+                                    currentValue = `0`;
+                                } else {
+                                    currentValue = currentValue.slice(0, -1);
+                                }
+                                updateDisplay();
+                            }
+
+                            document.addEventListener(`keydown`, function(e) {
+                                logEvent(`Event Listener: keydown "${e.key}"`);
+                                if (e.key >= `0` && e.key <= `9`) appendNumber(e.key);
+                                else if (e.key === `.`) appendNumber(`.`);
+                                else if ([`+`, `-`, `*`, `/`, `%`].includes(e.key)) applyOperator(e.key);
+                                else if (e.key === `Enter` || e.key === `=`) { e.preventDefault(); calculate(); }
+                                else if (e.key === `Backspace`) deleteLast();
+                                else if (e.key === `Escape`) clearAll();
+                            });
+
+                            logEvent(`Calculator loaded. Ready!`);
+                        </script>
+                    </body>
+                    </html>
+                    ' style="width:100%; height:480px; border:none; border-radius:8px;"></iframe>
+                    <a href="mycalculator.html" download class="download-link">📥 Download Calculator File</a>
+                </div>
+                <div class="flex-item">
+                    <p class="file-name">Explanation Video</p>
+                    <video controls>
+                        <source src="Explaination.mp4" type="video/mp4">
+                        Your browser does not support video playback.
+                    </video>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ MY FAMILY ALBUMS -->
+        <h2>My Family Albums 🖼️</h2>
+        <div class="album-wrapper">
+            <button class="album-btn btn-left" onclick="slideLeft()">‹</button>
+            <div class="album-container" id="albumSlide">
+                <img src="family1.jpg" alt="Family Photo 1" class="album-photo">
+                <img src="family2.jpg" alt="Family Photo 2" class="album-photo">
+                <img src="family3.jpg" alt="Family Photo 3" class="album-photo">
+                <img src="family4.jpg" alt="Family Photo 4" class="album-photo">
+                <img src="family5.jpg" alt="Family Photo 5" class="album-photo">
+                <img src="family6.jpg" alt="Family Photo 6" class="album-photo">
+                <img src="family7.jpg" alt="Family Photo 7" class="album-photo">
+                <img src="family8.jpg" alt="Family Photo 8" class="album-photo">
+                <img src="family9.jpg" alt="Family Photo 9" class="album-photo">
+            </div>
+            <button class="album-btn btn-right" onclick="slideRight()">›</button>
+        </div>
+
+        <h2>My Skills & Interests</h2>
+        <p><strong>🎵 Playing All Musical Instruments</strong><br>
+        I enjoy playing different musical instruments and creating music in my free time.</p>
+
+        <p><strong>💻 Preparing to Study Programming</strong><br>
+        I am currently preparing and learning the basics to master programming and web development soon.</p>
+
+        <p><strong>📱 Software & Applications</strong><br>
+        I am interested in learning how software works, exploring different applications, and creating useful tools for daily use.</p>
+
+        <!-- ✅ PINAKA UBOS — TANAN ITALIC + PINK -->
+        <h2>My Reflection</h2>
+        <div class="reflection-text">
+            Hello! I’m Hanny Jane Mahusay from Mati City, Davao Oriental. We used to live in Donluis Village, but we are now staying at Riverside Sudlon after our house was burned down.
+            <br><br>
+            I am a Grade 12 student at Mati National Comprehensive High School, taking ICT Programming. I have a unique way of speaking but people still understand me. I am shy and quiet, and I choose friends who have the same mindset and values as I do — not those who are too loud or always going out. I prefer simple friends who also have strict parents. I have three close friends, so we are four in all.
+            <br><br>
+            Sometimes I feel a little envious because they are all smart and achievers, but I never regret having them — they always help me, especially with our programming tasks. I admit I don’t understand codes easily and I find our strand difficult at times, but I am doing my best to learn. My goal is to take Information Technology in college. Some say it’s hard, but I believe no course is easy. I will just work hard and trust God to help me reach my dreams. I live a simple, peaceful, and happy life — and that means everything to me.
+        </div>
+    </div>
+
+    <!-- ✅ FIXED SCRIPT — WALAY DOUBLE, MO-ANDAR NA ANG SLIDER -->
+    <script>
+        // Click para sa Video & PowerPoint
+        const mediaToggle1 = document.getElementById('mediaToggle1');
+        const mediaContent1 = document.getElementById('mediaContent1');
+        mediaToggle1.addEventListener('click', function() {
+            mediaToggle1.classList.toggle('collapsed');
+            mediaContent1.classList.toggle('show');
+        });
+
+        // Click para sa Calculator & Video
+        const mediaToggle2 = document.getElementById('mediaToggle2');
+        const mediaContent2 = document.getElementById('mediaContent2');
+        mediaToggle2.addEventListener('click', function() {
+            mediaToggle2.classList.toggle('collapsed');
+            mediaContent2.classList.toggle('show');
+        });
+
+        // ✅ SLIDER FUNCTION — TANANG LITRATO MAKITA NA
+        let currentPos = 0;
+        const slide = document.getElementById('albumSlide');
+        const totalPhotos = document.querySelectorAll('.album-photo').length;
+        const visibleCount = 3;
+        const photoWidth = 280 + 15;
+
+        function slideLeft() {
+            if (currentPos > 0) {
+                currentPos--;
+                updateSlide();
+            }
+        }
+        function slideRight() {
+            const maxPos = totalPhotos - visibleCount;
+            if (currentPos < maxPos) {
+                currentPos++;
+                updateSlide();
+            }
+        }
+        function updateSlide() {
+            slide.style.transform = `translateX(-${currentPos * photoWidth}px)`;
+        }
+    </script>
+</body>
+</html>
